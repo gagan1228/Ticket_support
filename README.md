@@ -1,6 +1,6 @@
 # Support Ticket AI
 
-An AI-powered system for querying and analysing customer support tickets using natural language. Built for the DOTMappers AI Engineer assessment.
+An AI-powered system for querying and analysing customer support tickets using natural language. 
 
 ---
 
