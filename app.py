@@ -36,7 +36,6 @@ def api_post(path, body):
         return None, str(e)
 
 
-# ── sidebar ────────────────────────────────────────────────────────────────────
 with st.sidebar:
     st.header("📊 Overview")
     stats, err = api_get("/stats")
@@ -67,13 +66,12 @@ with st.sidebar:
             st.write(f"**{cat}**: {count}")
 
 
-# ── main tabs ──────────────────────────────────────────────────────────────────
+
 tab_query, tab_anomalies, tab_agents = st.tabs(
     ["💬 Ask a Question", "⚠️ Anomalies", "👤 Agent Performance"]
 )
 
 
-# ── Tab 1: NL Query ────────────────────────────────────────────────────────────
 with tab_query:
     st.subheader("Ask anything about the tickets")
 
@@ -111,7 +109,7 @@ with tab_query:
                 st.info("Query returned no rows.")
 
 
-# ── Tab 2: Anomalies ──────────────────────────────────────────────────────────
+
 with tab_anomalies:
     st.subheader("Detected Anomalies")
     st.caption("Rules: overdue high-priority tickets, IQR-based slow resolutions, 1-star ratings, suspiciously fast closes")
@@ -151,7 +149,6 @@ with tab_anomalies:
             st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
 
 
-# ── Tab 3: Agent Performance ──────────────────────────────────────────────────
 with tab_agents:
     st.subheader("Agent Performance (Resolved Tickets Only)")
 
