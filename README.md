@@ -82,47 +82,6 @@ Then open **http://localhost:8501** in your browser.
 | GET | `/anomalies` | All detected anomalies with severity |
 | GET | `/stats` | Ticket counts, ratings, agent breakdown |
 
-### Example — `/query`
-
-```bash
-curl -X POST http://localhost:8000/query \
-  -H "Content-Type: application/json" \
-  -d '{"question": "How many critical tickets are unresolved?"}'
-```
-
-```json
-{
-  "question": "How many critical tickets are unresolved?",
-  "sql": "SELECT COUNT(*) FROM tickets WHERE priority = 'Critical' AND status != 'Resolved'",
-  "answer": "There are 12 Critical tickets that are currently unresolved.",
-  "row_count": 1,
-  "data": [{"COUNT(*)": 12}]
-}
-```
-
----
-
-## Example queries with outputs
-
-**"How many tickets are currently open?"**
-> There are currently 111 open tickets.
-
-**"Which agent resolved the most tickets?"**
-> AGT-12 resolved the most tickets with 37 resolutions.
-
-**"Show me all Critical tickets not resolved within 12 hours."**
-> Several Critical tickets exceeded 12hrs resolution time — the worst was TKT-255 handled by AGT-06 at 66.6hrs, followed by TKT-446 (AGT-04, 60.6hrs) and TKT-238 (AGT-12, 53.4hrs).
-
-**"What is the average customer rating for Technical category tickets?"**
-> The average customer rating for Technical tickets is 3.74 out of 5.
-
-**"Which agent has the lowest average customer rating?"**
-> AGT-08 has the lowest average customer rating at 3.48.
-
-**"Are there any anomalies in resolution times this week?"**
-> The `/anomalies` endpoint detected 35 anomalies total — 21 medium severity (slow resolutions via IQR), 14 low severity (1-star ratings).
-
----
 
 ## Model & tools used
 
@@ -133,20 +92,3 @@ curl -X POST http://localhost:8000/query \
 | Backend | FastAPI | Lightweight, auto-generates OpenAPI docs |
 | UI | Streamlit | Quickest path to a working dashboard |
 
----
-
-## Known limitations
-
-- The NL→SQL step can misfire on ambiguous or multi-step questions (e.g. *"compare this week to last week"*). A retry loop or query planner would help.
-- `resolution_time_hrs` is only populated for Resolved tickets — queries that mix it with Open tickets can return misleading results if the LLM doesn't account for NULLs.
-- The system reconstructs `tickets.db` on every startup, so any runtime state (e.g. manual edits) is lost.
-- No auth on the API — fine for local/assessment use, not for production.
-
----
-
-## What I'd improve with more time
-
-1. Add a query retry loop — if the generated SQL fails, send the error back to the LLM for a self-correction pass.
-2. Persist the DB between restarts and add a `/reload` endpoint to refresh from CSV.
-3. Stream the LLM response to the UI using Server-Sent Events.
-4. Add more anomaly rules (e.g. agent suddenly drops in rating over a rolling window).
